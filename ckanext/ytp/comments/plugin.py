@@ -31,6 +31,7 @@ class YtpCommentsPlugin(MixinPlugin, plugins.SingletonPlugin):
         toolkit.add_template_directory(config, "templates")
         toolkit.add_public_directory(config, 'public')
         toolkit.add_resource('public/javascript/', 'comments_js')
+        toolkit.add_resource('public/javascript/', 'ytp_comments')
 
     def update_config_schema(self, schema):
         schema.update({
