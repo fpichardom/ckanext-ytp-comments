@@ -31,6 +31,9 @@ def comment_update(context, data_dict):
     if content_type and content_item_id:
         if helpers.user_can_manage_comments(content_type, content_item_id):
             return {'success': True}
+        # If user can't manage comments, check if they're the author and editing is enabled
+        elif helpers.user_can_edit_comment(comment.user_id):
+            return {'success': True}
         else:
             return {'success': False, 'msg': _('User is not authorised to edit this comment')}
 
