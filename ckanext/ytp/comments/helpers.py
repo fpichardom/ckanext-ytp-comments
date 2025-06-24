@@ -5,7 +5,7 @@ import sqlalchemy
 
 from ckan import model
 from ckan.plugins.toolkit import asbool, c, h, config, check_access, \
-    get_action, render, render_snippet, url_for
+    get_action, render, render_snippet, url_for, g
 from profanityfilter import ProfanityFilter
 
 _and_ = sqlalchemy.and_
@@ -183,4 +183,4 @@ def unreplied_comments_x_days(thread_url):
 
 
 def get_comment_notification_recipients_enabled():
-    return config.get('ckan.comments.follow_mute_enabled', False)
+    return asbool(config.get('ckan.comments.follow_mute_enabled', False))

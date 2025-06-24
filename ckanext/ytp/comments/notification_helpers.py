@@ -14,7 +14,8 @@ log = logging.getLogger(__name__)
 
 
 def comment_notification_recipients_enabled():
-    return config.get('ckan.comments.follow_mute_enabled', False)
+    from ckan.plugins.toolkit import asbool
+    return asbool(config.get('ckan.comments.follow_mute_enabled', False))
 
 
 def get_thread_comment_or_both(thread_or_comment_id):
