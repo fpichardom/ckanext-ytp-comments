@@ -173,7 +173,7 @@ def get_comment_thread(dataset_id, content_type='dataset'):
 
 
 def get_comment_count_for_dataset(dataset_id, content_type='dataset'):
-    # First try with dataset ID (new format)
+    # Try with dataset ID (new format)
     url = '/%s/%s' % (content_type, dataset_id)
     count = get_action('comment_count')({'model': model}, {'url': url})
     
@@ -184,8 +184,7 @@ def get_comment_count_for_dataset(dataset_id, content_type='dataset'):
             dataset = get_action('package_show')({'model': model}, {'id': dataset_id})
             name_url = '/%s/%s' % (content_type, dataset['name'])
             legacy_count = get_action('comment_count')({'model': model}, {'url': name_url})
-            if legacy_count > 0:
-                return legacy_count
+            return legacy_count  # Return legacy count even if 0
         except Exception:
             pass
     
