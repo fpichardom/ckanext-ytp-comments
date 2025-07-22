@@ -193,7 +193,7 @@ def _add_or_reply(comment_type, content_item_id, content_type='dataset', parent_
         tuplize_dict(parse_params(request_helpers.RequestHelper(request).get_post_params()))))
     data_dict['parent_id'] = c.parent.id if 'parent' in dir(c) else None
 
-    data_dict['url'] = '/%s/%s' % (content_type, content_item_id if content_type == 'datarequest' else c.pkg.name)
+    data_dict['url'] = '/%s/%s' % (content_type, content_item_id if content_type == 'datarequest' else c.pkg.id)
 
     success = False
     try:

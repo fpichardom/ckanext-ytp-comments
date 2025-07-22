@@ -145,19 +145,55 @@ def get_user_id():
     return user.id
 
 
-def get_comment_thread(dataset_name, content_type='dataset'):
-    url = '/%s/%s' % (content_type, dataset_name)
+def get_comment_thread(dataset_id, content_type='dataset'):
+    # First try with dataset ID (new format)
+    url = '/%s/%s' % (content_type, dataset_id)
+    try:
+        thread = get_action('thread_show')({'model': model, 'with_deleted': True}, {'url': url})
+        # If thread exists and has comments, return it
+        if thread and thread.get('comments'):
+            return thread
+    except Exception:
+        pass
+    
+    # If no thread found with ID or it has no comments, try with dataset name (legacy format)
+    try:
+        # Get the dataset to find its name
+        dataset = get_action('package_show')({'model': model}, {'id': dataset_id})
+        name_url = '/%s/%s' % (content_type, dataset['name'])
+        legacy_thread = get_action('thread_show')({'model': model, 'with_deleted': True}, {'url': name_url})
+        # If legacy thread has comments, return it; otherwise return the ID-based thread for new comments
+        if legacy_thread and legacy_thread.get('comments'):
+            return legacy_thread
+    except Exception:
+        pass
+    
+    # Return the ID-based thread (will be created if it doesn't exist)
     return get_action('thread_show')({'model': model, 'with_deleted': True}, {'url': url})
 
 
-def get_comment_count_for_dataset(dataset_name, content_type='dataset'):
-    url = '/%s/%s' % (content_type, dataset_name)
+def get_comment_count_for_dataset(dataset_id, content_type='dataset'):
+    # First try with dataset ID (new format)
+    url = '/%s/%s' % (content_type, dataset_id)
     count = get_action('comment_count')({'model': model}, {'url': url})
+    
+    # If no comments found with ID, try with dataset name (legacy format)
+    if count == 0:
+        try:
+            # Get the dataset to find its name
+            dataset = get_action('package_show')({'model': model}, {'id': dataset_id})
+            name_url = '/%s/%s' % (content_type, dataset['name'])
+            legacy_count = get_action('comment_count')({'model': model}, {'url': name_url})
+            if legacy_count > 0:
+                return legacy_count
+        except Exception:
+            pass
+    
     return count
 
 
-def get_content_type_comments_badge(dataset_name, content_type='dataset'):
-    comments_count = get_comment_count_for_dataset(dataset_name, content_type)
+def get_content_type_comments_badge(dataset_id, content_type='dataset'):
+    comments_count = get_comment_count_for_dataset(dataset_id, content_type)
     return render_snippet('snippets/count_badge.html', {'count': comments_count})
 
 
